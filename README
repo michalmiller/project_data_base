@@ -1,1 +1,45 @@
+Registration and Leisure Management Department
+System Overview
+This system is designed to manage the complex logistical and educational operations of a community center. Unlike basic models, this system supports multi-resource allocation, allowing for flexible assignments where classes can involve multiple instructors, various locations, and interdisciplinary course affiliations.
+
+Core Functionality
+Advanced Course Mapping: Managing courses that can span multiple categories and group structures.
+
+Dynamic Resource Scheduling: Handling complex Many-to-Many relationships between instructors, rooms, and class groups to maximize facility utility.
+
+Enrollment & Capacity Tracking: Managing participant registration while monitoring real-time occupancy across different venues.
+
+Data Model (ERD Entities)
+The database is designed to support Many-to-Many (N:M) relationships through the following entities:
+
+1. Base Entities
+Courses: CourseID (PK), CourseName, Description, Price.
+
+Instructors: InstructorID (PK), FullName, Phone, Specialization.
+
+Rooms: RoomNumber (PK), MaxCapacity, Type.
+
+Participants: ParticipantID (PK), FullName, DateOfBirth, Phone.
+
+Groups: GroupID (PK), GroupName, DayOfWeek, StartTime.
+
+2. Junction Entities (N:M Relationships)
+To support your requirement for multiple assignments, we use the following junction tables:
+
+Group_Instructors: Connects multiple instructors to a single group and vice versa.
+
+Fields: GroupID (FK), InstructorID (FK).
+
+Group_Rooms: Allows a group to be scheduled in different rooms (e.g., a lab for practice and a hall for lectures).
+
+Fields: GroupID (FK), RoomNumber (FK).
+
+Group_Courses: Links groups to one or more courses.
+
+Fields: GroupID (FK), CourseID (FK).
+
+Enrollment: Links participants to their chosen groups.
+
+Fields: ParticipantID (FK), GroupID (FK), EnrollmentDate.
+
 
