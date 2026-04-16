@@ -1,3 +1,163 @@
+# Sports Tournament Database – Phase 1
+
+## Overview
+This project is a sports tournament management system implemented using a relational database.
+
+The purpose of Phase 1 is to design the database structure, including entities, attributes, and relationships, using ERD and relational schema (DSD).
+
+---
+
+## System Description
+The system manages a sports tournament that includes:
+- National teams
+- Players
+- Matches
+- Stadiums
+- Match events
+- Referees
+- Coaches
+
+The database allows tracking of players, teams, matches, and events that occur during matches.
+
+---
+
+## ERD (Entity Relationship Diagram)
+
+The ERD describes the main entities and their relationships.
+
+### Main Entities:
+- Player
+- NationalTeam
+- Match
+- Stadium
+- MatchEvent
+- Referee
+- Coach
+- PlayerStatistics
+
+### Key Relationships:
+- A team has many players (1:N)
+- A team has one coach (1:1)
+- A match includes many events (1:N)
+- A player participates in events (1:N)
+- A match is officiated by a referee (1:N)
+- Matches are played in stadiums
+
+---
+
+## DSD (Database Schema Design)
+
+### Player
+- player_id (PK)
+- first_name
+- last_name
+- birth_date
+- jersey_number
+- position
+- height
+- nationality
+- team_id (FK)
+- extra_info_json
+
+### NationalTeam
+- team_id (PK)
+- team_name
+- country
+- team_rank
+- sport_type
+- founded_date
+- team_colors
+- team_details_json
+
+### Match
+- match_id (PK)
+- match_date
+- home_team
+- away_team
+- home_score
+- away_score
+- attendance
+- status
+- stadium_id (FK)
+
+### Stadium
+- stadium_id (PK)
+- stadium_name
+- city
+- country
+- capacity
+- build_date
+- stadium_type
+
+### MatchEvent
+- event_id (PK)
+- match_id (FK)
+- event_type
+- event_minute
+- event_description
+- event_data_json
+- severity_level
+
+### Referee
+- referee_id (PK)
+- first_name
+- last_name
+- birth_date
+- nationality
+- certification_level
+- years_of_experience
+
+### Coach
+- coach_id (PK)
+- first_name
+- last_name
+- birth_date
+- nationality
+- contract_start_date
+- years_of_experience
+
+### PlayerStatistics
+- stat_id (PK)
+- player_id (FK)
+- match_id (FK)
+- stat_date
+- points_or_goals
+- assists
+- fouls
+- yellow_cards
+- red_cards
+- minutes_played
+
+---
+
+## Design Decisions
+
+- Primary keys are numeric for performance and simplicity.
+- Foreign keys are used to maintain relationships between tables.
+- JSON fields are used for flexible and dynamic data (extra_info_json, event_data_json).
+- Some derived values (like number_of_players) may be calculated dynamically in later phases.
+
+---
+
+## Assumptions
+
+- Each player belongs to exactly one team.
+- Each team has one coach.
+- Each match has one referee.
+- Each match takes place in one stadium.
+- Events are always linked to a match.
+
+---
+
+## Files Included
+
+- ERD diagram (image)
+- DSD schema
+- Documentation file (this README)
+
+---
+
+
 README – Phase 2: SQL Queries
 Table of Contents
 Introduction
@@ -81,7 +241,7 @@ Real-World Usage
 
 Efficiently retrieves team sizes for reporting and analytics.
 
-[Insert Screenshot Here – same result table]
+
 
 Comparison Between Approaches
 
@@ -127,7 +287,6 @@ min_attendance = 1163
 max_attendance = 48971
 total_matches = 100
 
-[Insert Screenshot Here – attendance statistics table]
 
 Query 4 – Count Events by Type
 Purpose
