@@ -1,54 +1,28 @@
-## Stage 1 – Top-Down Analysis
-
-### System Description
-The system is designed to manage an international sports tournament. It stores information about national teams, players, coaches, matches, referees, stadiums and match events. The goal of the system is to organize tournament data in a structured way and support data retrieval, updates and analysis.
-
-### System Boundaries
-The system focuses on tournament management only, including teams, players, matches, results, referees, stadiums and statistics. It does not handle ticket sales, financial management or broadcasting.
-
-### Users
-1. Admin  
-2. Regular User
-
-### User Actions
-#### Admin
-- Add, update and delete teams
-- Add, update and delete players
-- Create matches
-- Assign stadiums and referees
-- Update match results
-- Manage tournament information
-
-#### Regular User
-- View teams and players
-- Search for matches
-- View results and statistics
-- View match events
-
-### Planned Screens
-1. Home Screen  
-2. Team Management Screen  
-3. Player Management Screen  
-4. Match Management Screen  
-5. Search Screen  
-6. Statistics and Events Screen
-
 README – Phase 2: SQL Queries
+Table of Contents
+Introduction
+Query 1 – Subquery
+Query 2 – JOIN
+Comparison Between Approaches
+Query 3 – Attendance Statistics
+Query 4 – Event Types Count
+Query 5 – Match Events List
+Query 6 – Team with Maximum Players
+Query 7 – Matches per Stadium
+Query 8 – Matches with Team Names
+Summary
 Introduction
 
-In this phase, we implemented advanced SQL queries on a sports tournament database (football/basketball).
+This phase follows the course requirements and demonstrates the use of SQL concepts learned in class, including JOIN, GROUP BY, subqueries, and aggregate functions.
 
-The goal of this phase:
-
-Practice SQL querying
-Use JOIN, GROUP BY, subqueries, and aggregate functions
-Analyze and compare different query approaches
+The goal is to analyze a sports tournament database and extract meaningful insights using SQL queries.
 
 Each query includes:
 
 Purpose
 SQL code
 Explanation
+Real-world usage
 Output (with screenshots)
 Query 1 – Count Players per Team (Subquery)
 Purpose
@@ -69,6 +43,10 @@ FROM national_team n;
 Explanation
 
 For each team, a subquery counts how many players belong to it.
+
+Real-World Usage
+
+This query helps organizers understand team sizes for planning tournaments and logistics.
 
 Output
 
@@ -99,11 +77,21 @@ Explanation
 
 Uses LEFT JOIN to include all teams and COUNT to calculate the number of players.
 
+Real-World Usage
+
+Efficiently retrieves team sizes for reporting and analytics.
+
+[Insert Screenshot Here – same result table]
+
+Comparison Between Approaches
+
+The subquery solution (Query 1) is simpler to understand but less efficient, since the subquery executes once for each row.
+
+The JOIN solution (Query 2) is more efficient because it processes all data in a single pass using grouping.
+
 Conclusion
 
-This approach is generally more efficient than a subquery for large datasets.
-
-
+JOIN is preferred for large datasets due to better performance.
 
 Query 3 – Attendance Statistics by Match Status
 Purpose
@@ -126,6 +114,10 @@ Explanation
 
 Calculates average, minimum, maximum attendance and total number of matches.
 
+Real-World Usage
+
+Helps analyze audience engagement and improve future event planning.
+
 Output
 
 Example:
@@ -135,7 +127,7 @@ min_attendance = 1163
 max_attendance = 48971
 total_matches = 100
 
-
+[Insert Screenshot Here – attendance statistics table]
 
 Query 4 – Count Events by Type
 Purpose
@@ -154,6 +146,10 @@ ORDER BY total_events DESC, event_type;
 Explanation
 
 Groups events by type and counts them.
+
+Real-World Usage
+
+Useful for analyzing match intensity and player behavior.
 
 
 
@@ -177,7 +173,11 @@ Explanation
 
 Displays events chronologically by match and minute.
 
-[Insert Screenshot Here – full events table]
+Real-World Usage
+
+Allows tracking full match timelines for analysis and review.
+
+
 
 Query 6 – Team with Maximum Players
 Purpose
@@ -209,6 +209,10 @@ Explanation
 
 Uses a subquery to find the maximum number of players and filters only the team that matches it.
 
+Real-World Usage
+
+Helps identify dominant or largest teams for strategic decisions.
+
 Output
 
 Example:
@@ -238,6 +242,10 @@ Explanation
 
 Counts matches per stadium using LEFT JOIN.
 
+Real-World Usage
+
+Helps evaluate stadium usage and plan future scheduling.
+
 Output
 
 Example:
@@ -246,7 +254,7 @@ National Stadium – 39
 City Arena – 33
 Olympic Field – 28
 
-[Insert Screenshot Here – stadium results]
+
 
 Query 8 – Matches with Team Names
 Purpose
@@ -274,6 +282,10 @@ Explanation
 
 Uses two JOINs to retrieve both home and away team names.
 
+Real-World Usage
+
+Improves readability for reports and user interfaces.
+
 Output
 
 Example:
@@ -293,4 +305,4 @@ Aggregate functions (COUNT, AVG, MIN, MAX)
 GROUP BY and HAVING
 Sorting results
 
-Additionally, we compared subquery vs JOIN approaches and concluded that JOIN is generally more efficient.
+From a performance perspective, queries using JOIN are generally more efficient than correlated subqueries, especially on large datasets.
