@@ -32,3 +32,265 @@ The system focuses on tournament management only, including teams, players, matc
 4. Match Management Screen  
 5. Search Screen  
 6. Statistics and Events Screen
+
+README – Phase 2: SQL Queries
+Introduction
+
+In this phase, we implemented advanced SQL queries on a sports tournament database (football/basketball).
+
+The goal of this phase:
+
+Practice SQL querying
+Use JOIN, GROUP BY, subqueries, and aggregate functions
+Analyze and compare different query approaches
+
+Each query includes:
+
+Purpose
+SQL code
+Explanation
+Output (with screenshots)
+Query 1 – Count Players per Team (Subquery)
+Purpose
+
+Retrieve the number of players for each national team using a subquery.
+
+SQL
+
+SELECT
+n.team_name,
+(
+SELECT COUNT(*)
+FROM player p
+WHERE p.team_id = n.team_id
+) AS number_of_players
+FROM national_team n;
+
+Explanation
+
+For each team, a subquery counts how many players belong to it.
+
+Output
+
+Example:
+
+Israel – 158 players
+USA – 180 players
+Spain – 162 players
+
+
+
+Query 2 – Count Players per Team (JOIN)
+Purpose
+
+Achieve the same result as Query 1 using JOIN.
+
+SQL
+
+SELECT
+n.team_name,
+COUNT(p.player_id) AS number_of_players
+FROM national_team n
+LEFT JOIN player p
+ON n.team_id = p.team_id
+GROUP BY n.team_name;
+
+Explanation
+
+Uses LEFT JOIN to include all teams and COUNT to calculate the number of players.
+
+Conclusion
+
+This approach is generally more efficient than a subquery for large datasets.
+
+
+
+Query 3 – Attendance Statistics by Match Status
+Purpose
+
+Calculate statistics about attendance based on match status.
+
+SQL
+
+SELECT
+status,
+AVG(attendance) AS avg_attendance,
+MIN(attendance) AS min_attendance,
+MAX(attendance) AS max_attendance,
+COUNT(*) AS total_matches
+FROM match
+GROUP BY status
+ORDER BY avg_attendance DESC;
+
+Explanation
+
+Calculates average, minimum, maximum attendance and total number of matches.
+
+Output
+
+Example:
+
+avg_attendance ≈ 25177
+min_attendance = 1163
+max_attendance = 48971
+total_matches = 100
+
+
+
+Query 4 – Count Events by Type
+Purpose
+
+Count how many events exist for each event type.
+
+SQL
+
+SELECT
+event_type,
+COUNT(*) AS total_events
+FROM match_event
+GROUP BY event_type
+ORDER BY total_events DESC, event_type;
+
+Explanation
+
+Groups events by type and counts them.
+
+
+
+Query 5 – List All Match Events
+Purpose
+
+Display all match events ordered by match and time.
+
+SQL
+
+SELECT
+event_id,
+match_id,
+event_type,
+event_minute,
+event_description
+FROM match_event
+ORDER BY match_id, event_minute;
+
+Explanation
+
+Displays events chronologically by match and minute.
+
+[Insert Screenshot Here – full events table]
+
+Query 6 – Team with Maximum Players
+Purpose
+
+Find the team with the highest number of players.
+
+SQL
+
+SELECT
+n.team_id,
+n.team_name,
+COUNT(p.player_id) AS number_of_players
+FROM national_team n
+LEFT JOIN player p
+ON n.team_id = p.team_id
+GROUP BY n.team_id, n.team_name
+HAVING COUNT(p.player_id) = (
+SELECT MAX(player_count)
+FROM (
+SELECT COUNT(p2.player_id) AS player_count
+FROM national_team n2
+LEFT JOIN player p2
+ON n2.team_id = p2.team_id
+GROUP BY n2.team_id
+) AS counts
+);
+
+Explanation
+
+Uses a subquery to find the maximum number of players and filters only the team that matches it.
+
+Output
+
+Example:
+
+USA – 180 players
+
+
+
+Query 7 – Matches per Stadium
+Purpose
+
+Count how many matches were played in each stadium.
+
+SQL
+
+SELECT
+s.stadium_id,
+s.stadium_name,
+COUNT(m.match_id) AS number_of_matches
+FROM stadium s
+LEFT JOIN match m
+ON s.stadium_id = m.stadium_id
+GROUP BY s.stadium_id, s.stadium_name
+ORDER BY number_of_matches DESC, s.stadium_name;
+
+Explanation
+
+Counts matches per stadium using LEFT JOIN.
+
+Output
+
+Example:
+
+National Stadium – 39
+City Arena – 33
+Olympic Field – 28
+
+[Insert Screenshot Here – stadium results]
+
+Query 8 – Matches with Team Names
+Purpose
+
+Display matches with readable team names instead of IDs.
+
+SQL
+
+SELECT
+m.match_id,
+m.match_date,
+home.team_name AS home_team,
+away.team_name AS away_team,
+m.home_score,
+m.away_score,
+m.status
+FROM match m
+JOIN national_team home
+ON m.home_team_id = home.team_id
+JOIN national_team away
+ON m.away_team_id = away.team_id
+ORDER BY m.match_date;
+
+Explanation
+
+Uses two JOINs to retrieve both home and away team names.
+
+Output
+
+Example:
+
+Israel vs USA (4-4)
+Spain vs USA (3-0)
+
+
+
+Summary
+
+In this phase, we demonstrated:
+
+JOIN operations
+Subqueries
+Aggregate functions (COUNT, AVG, MIN, MAX)
+GROUP BY and HAVING
+Sorting results
+
+Additionally, we compared subquery vs JOIN approaches and concluded that JOIN is generally more efficient.
