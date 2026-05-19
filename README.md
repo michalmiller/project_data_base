@@ -314,25 +314,24 @@ CSV files were imported into PostgreSQL tables.
 
 ## Screenshot 1
 
-![Screenshot1](images/צילום מסך 2026-05-19 221821.png)
+![Screenshot1](images/screenshot1.png)
 
 ---
 
 ## Screenshot 2
 
-![Screenshot2](images/צילום מסך 2026-05-19 222139.png)
+![Screenshot2](images/screenshot2.png)
 
 ---
 
 ## Screenshot 3
 
-![Screenshot3](images/צילום מסך 2026-05-19 222324.png)
+![Screenshot3](images/screenshot3.png)
 
 ---
-
 ## Screenshot 4
 
-![Screenshot4](images/צילום מסך 2026-05-19 222452.png)
+![Screenshot4](images/screenshot4.png)
 
 ---
 
