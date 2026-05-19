@@ -2,28 +2,27 @@
 
 ## Overview
 
-This project is a relational database system designed for managing sports tournaments, matches, teams, players, referees, coaches, and clothing store employees.
+This project is a relational database system designed for managing sports tournaments, teams, players, referees, coaches, stadiums, and clothing store employees.
 
-The system combines sports tournament management with a clothing store management concept, where:
+The system combines sports tournament management with clothing store management, where:
 - Players work for clothing stores
 - Coaches work for clothing stores
 - Referees work for clothing stores
 - Clothing stores organize tournaments
 
-The project was designed and implemented using:
+The project was developed using:
 - ERD Plus
 - PostgreSQL
 - pgAdmin
-- SQL
 - Python
-- CSV / Excel files
-- Mockaroo / GenerateData
+- SQL
+- GitHub
 
 ---
 
 # System Description
 
-The system manages:
+The database manages:
 
 - National teams
 - Players
@@ -36,13 +35,13 @@ The system manages:
 - Tournaments
 - Clothing stores
 
-The database allows:
-- Tracking matches and results
-- Managing tournaments
-- Recording match events
-- Storing player statistics
-- Managing employee relationships
-- Organizing tournaments through clothing stores
+The system allows:
+- Tournament management
+- Match tracking
+- Player statistics management
+- Employee management
+- Match event tracking
+- Data analysis using SQL queries
 
 ---
 
@@ -73,13 +72,13 @@ Stores coach information and employment details.
 Stores referee information and certification details.
 
 ## Match
-Stores match information including scores, attendance, and status.
+Stores match information including scores and attendance.
 
 ## MatchEvent
-Stores events occurring during matches.
+Stores events that occur during matches.
 
 ## PlayerStatistics
-Stores statistical information about player performance during matches.
+Stores player performance statistics.
 
 ## Stadium
 Stores stadium information.
@@ -101,7 +100,7 @@ Stores clothing store information and employee relationships.
 
 ## Match Relationships
 - A match includes many events (1:N)
-- A match contains player statistics (1:N)
+- A match contains many player statistics (1:N)
 - A match is officiated by one referee (N:1)
 - A match is played in one stadium (N:1)
 
@@ -116,10 +115,10 @@ Stores clothing store information and employee relationships.
 
 ---
 
-# Database Schema (DSD)
+# Database Schema
 
 ## NationalTeam
-- team_id (PK)
+- team_id
 - team_name
 - country
 - team_rank
@@ -129,7 +128,7 @@ Stores clothing store information and employee relationships.
 - team_details_json
 
 ## Player
-- player_id (PK)
+- player_id
 - first_name
 - last_name
 - birth_date
@@ -137,51 +136,52 @@ Stores clothing store information and employee relationships.
 - position
 - height
 - jersey_number
-- team_id (FK)
-- store_id (FK)
+- team_id
+- store_id
 
 ## Coach
-- coach_id (PK)
+- coach_id
 - first_name
 - last_name
 - birth_date
 - nationality
 - years_of_experience
 - contract_start_date
-- team_id (FK)
-- store_id (FK)
+- team_id
+- store_id
 
 ## Referee
-- referee_id (PK)
+- referee_id
 - first_name
 - last_name
 - birth_date
 - nationality
 - certification_level
 - years_of_experience
-- store_id (FK)
+- store_id
 
 ## Match
-- match_id (PK)
+- match_id
 - match_date
 - status
 - home_score
 - away_score
 - attendance
 - weather_json
-- referee_id (FK)
-- tournament_id (FK)
+- referee_id
+- tournament_id
 
 ## MatchEvent
-- event_id (PK)
+- event_id
 - event_type
 - event_minute
 - event_description
 - severity_level
-- match_id (FK)
+- Attribute
+- match_id
 
 ## PlayerStatistics
-- stat_id (PK)
+- stat_id
 - stat_date
 - minutes_played
 - points_or_goals
@@ -189,30 +189,29 @@ Stores clothing store information and employee relationships.
 - fouls
 - yellow_cards
 - red_cards
-- player_id (FK)
-- match_id (FK)
+- player_id
+- match_id
 
 ## Stadium
-- stadium_id (PK)
+- stadium_id
 - stadium_name
 - city
 - country
 - capacity
-- build_date
 - stadium_type
-- match_id (FK)
+- match_id
 
 ## Tournament
-- tournament_id (PK)
+- tournament_id
 - tournament_name
 - season
 - start_date
 - end_date
 - location
-- store_id (FK)
+- store_id
 
 ## ClothingStore
-- store_id (PK)
+- store_id
 - store_name
 - brand_name
 - website
@@ -223,17 +222,14 @@ Stores clothing store information and employee relationships.
 
 # Data Types Used
 
-The project uses multiple data types:
+The project uses:
 - INTEGER
 - VARCHAR
 - DATE
-- JSON
 
-JSON fields:
-- weather_json
-- team_details_json
+Fields containing JSON-like data were stored using VARCHAR.
 
-Date fields:
+Date fields include:
 - match_date
 - birth_date
 - founded_date
@@ -245,21 +241,21 @@ Date fields:
 
 # Functional Dependencies and Normalization
 
-## Example – PLAYER Table
-
-Functional Dependency:
+## PLAYER
 
 ```text
-player_id → first_name, last_name, birth_date, nationality,
-position, height, jersey_number, team_id, store_id
+player_id → first_name, last_name, birth_date,
+nationality, position, height, jersey_number,
+team_id, store_id
 ```
 
-Since all non-key attributes depend only on the primary key,
-the table satisfies 3NF.
+All non-key attributes depend only on the primary key.
+
+Therefore, the table satisfies 3NF.
 
 ---
 
-## Example – MATCH Table
+## MATCH
 
 ```text
 match_id → match_date, status, home_score,
@@ -272,23 +268,25 @@ Therefore, the table satisfies 3NF.
 
 ---
 
-## Example – TOURNAMENT Table
+## TOURNAMENT
 
 ```text
 tournament_id → tournament_name, season,
 start_date, end_date, location, store_id
 ```
 
-The table satisfies 3NF because there are no transitive dependencies.
+There are no transitive dependencies.
+
+Therefore, the table satisfies 3NF.
 
 ---
 
-## Normalization Summary
+# Normalization Summary
 
-All tables were normalized to 3NF / BCNF in order to:
+All tables were normalized to 3NF in order to:
 - Reduce redundancy
 - Prevent update anomalies
-- Maintain data consistency
+- Maintain consistency
 - Improve database integrity
 
 ---
@@ -297,34 +295,44 @@ All tables were normalized to 3NF / BCNF in order to:
 
 Data was inserted using multiple methods:
 
-## 1. Python Scripts
-Python scripts were used to generate random data and JSON values.
-
-## 2. Mockaroo / GenerateData
-External websites were used to generate realistic data for:
+## Python Scripts
+Python scripts were used to generate large amounts of random data for:
 - Players
-- Coaches
-- Referees
 - Matches
+- Match events
+- Player statistics
 
-## 3. CSV / Excel Files
+## External Websites
+Mockaroo and GenerateData were used to generate realistic data.
+
+## CSV / Excel Files
 CSV files were imported into PostgreSQL tables.
 
 ---
 
 # Data Population Screenshots
 
-## ERD Creation
+## Screenshot 1
 
-![ERD](images/erd.png)
+![Screenshot1](images/צילום מסך 2026-05-19 221821.png)
 
-## DSD Creation
+---
 
-![DSD](images/dsd.png)
+## Screenshot 2
 
-## Data Insertion Example
+![Screenshot2](images/צילום מסך 2026-05-19 222139.png)
 
-![Insert Data](images/insert_data.png)
+---
+
+## Screenshot 3
+
+![Screenshot3](images/צילום מסך 2026-05-19 222324.png)
+
+---
+
+## Screenshot 4
+
+![Screenshot4](images/צילום מסך 2026-05-19 222452.png)
 
 ---
 
@@ -341,18 +349,14 @@ The backup includes:
 
 The backup allows complete restoration of the system.
 
-## Backup Screenshot
-
-![Backup](images/backup.png)
-
 ---
 
 # Technologies Used
 
 - PostgreSQL
 - pgAdmin
-- ERD Plus
 - Python
+- ERD Plus
 - SQL
 - GitHub
 
@@ -364,15 +368,15 @@ The main goals of the project were:
 - Designing a relational database
 - Building a normalized schema
 - Managing relationships between entities
-- Practicing SQL and PostgreSQL
-- Working with ERD and DSD diagrams
+- Working with PostgreSQL
+- Practicing SQL
 - Creating backups and restoring databases
 
 ---
 
 # Summary
 
-This project demonstrates the design and implementation of a complete relational database system for sports tournament management integrated with clothing store employee management.
+This project demonstrates the design and implementation of a relational database system for sports tournament management integrated with clothing store employee management.
 
 The project includes:
 - ERD design
