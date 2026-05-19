@@ -1,34 +1,275 @@
-## Stage 1 – Top-Down Analysis
+# Sports Tournament & Clothing Store Database System
 
-### System Description
-The system is designed to manage an international sports tournament. It stores information about national teams, players, coaches, matches, referees, stadiums and match events. The goal of the system is to organize tournament data in a structured way and support data retrieval, updates and analysis.
+## Overview
 
-### System Boundaries
-The system focuses on tournament management only, including teams, players, matches, results, referees, stadiums and statistics. It does not handle ticket sales, financial management or broadcasting.
+This project is a relational database system designed for managing sports tournaments, teams, matches, and clothing store employees.
 
-### Users
-1. Admin  
-2. Regular User
+The system combines sports tournament management with a clothing store management concept, where players, coaches, and referees are also employees of a clothing store.
 
-### User Actions
-#### Admin
-- Add, update and delete teams
-- Add, update and delete players
-- Create matches
-- Assign stadiums and referees
-- Update match results
-- Manage tournament information
+The project was designed using:
 
-#### Regular User
-- View teams and players
-- Search for matches
-- View results and statistics
-- View match events
+* ERD (Entity Relationship Diagram)
+* Relational Schema (DSD)
+* SQL queries
+* PostgreSQL / MySQL compatible schema
 
-### Planned Screens
-1. Home Screen  
-2. Team Management Screen  
-3. Player Management Screen  
-4. Match Management Screen  
-5. Search Screen  
-6. Statistics and Events Screen
+---
+
+# System Description
+
+The database manages:
+
+* National teams
+* Players
+* Coaches
+* Referees
+* Matches
+* Stadiums
+* Match events
+* Player statistics
+* Tournaments
+* Clothing stores
+
+In the updated version of the project:
+
+* Teams participate in matches
+* Clothing stores organize tournaments
+* Players, coaches, and referees work for clothing stores
+
+---
+
+# ERD (Entity Relationship Diagram)
+
+## Main Entities
+
+* NationalTeam
+* Player
+* Coach
+* Referee
+* Match
+* MatchEvent
+* Stadium
+* Tournament
+* ClothingStore
+* PlayerStatistics
+
+---
+
+# Main Relationships
+
+## Team Relationships
+
+* A national team has many players (1:N)
+* A national team has one coach (1:1)
+* National teams participate in matches (N:N)
+
+## Match Relationships
+
+* A match includes many match events (1:N)
+* A match contains many player statistics (1:N)
+* A match is officiated by one referee (N:1)
+* A match is played in one stadium (N:1)
+* A tournament includes many matches (1:N)
+
+## Clothing Store Relationships
+
+* A clothing store organizes tournaments (1:N)
+* A clothing store employs players (1:N)
+* A clothing store employs coaches (1:N)
+* A clothing store employs referees (1:N)
+
+---
+
+# DSD (Database Schema Design)
+
+## NationalTeam
+
+* team_id (PK)
+* team_name
+* country
+* team_rank
+* team_colors
+* founded_date
+* sport_type
+* team_details_json
+
+---
+
+## Player
+
+* player_id (PK)
+* first_name
+* last_name
+* birth_date
+* nationality
+* position
+* height
+* jersey_number
+* extra_info_json
+* team_id (FK)
+* store_id (FK)
+
+---
+
+## Coach
+
+* coach_id (PK)
+* first_name
+* last_name
+* birth_date
+* nationality
+* years_of_experience
+* contract_start_date
+* team_id (FK)
+* store_id (FK)
+
+---
+
+## Referee
+
+* referee_id (PK)
+* first_name
+* last_name
+* birth_date
+* nationality
+* certification_level
+* years_of_experience
+* store_id (FK)
+
+---
+
+## Stadium
+
+* stadium_id (PK)
+* stadium_name
+* city
+* country
+* capacity
+* build_date
+* stadium_type
+
+---
+
+## Match
+
+* match_id (PK)
+* match_date
+* stage
+* status
+* home_score
+* away_score
+* attendance
+* weather_json
+* stadium_id (FK)
+* referee_id (FK)
+
+---
+
+## MatchEvent
+
+* event_id (PK)
+* event_type
+* event_minute
+* event_description
+* severity_level
+* event_data_json
+* match_id (FK)
+
+---
+
+## PlayerStatistics
+
+* stat_id (PK)
+* stat_date
+* minutes_played
+* points_or_goals
+* assists
+* fouls
+* yellow_cards
+* red_cards
+* player_id (FK)
+* match_id (FK)
+
+---
+
+## Tournament
+
+* tournament_id (PK)
+* tournament_name
+* season
+* start_date
+* end_date
+* location
+* store_id (FK)
+
+---
+
+## ClothingStore
+
+* store_id (PK)
+* store_name
+* brand_name
+* website
+* city
+* phone
+
+---
+
+# Design Decisions
+
+* Numeric primary keys are used for simplicity and performance.
+* Foreign keys maintain relationships and data integrity.
+* JSON fields are used for flexible and dynamic information.
+* The system supports both tournament management and employee management.
+* Many-to-many relationships are used where teams can participate in multiple matches.
+
+---
+
+# Assumptions
+
+* Each player belongs to one national team.
+* Each team has one coach.
+* Each match has one referee.
+* Each match takes place in one stadium.
+* Each tournament is organized by one clothing store.
+* Players, coaches, and referees work for clothing stores.
+
+---
+
+# SQL Features Used
+
+The project demonstrates:
+
+* JOIN operations
+* Subqueries
+* GROUP BY
+* HAVING
+* Aggregate functions
+* Foreign Keys
+* Primary Keys
+* Relational modeling
+
+---
+
+# Files Included
+
+* ERD diagram
+* Relational schema (DSD)
+* SQL scripts
+* README documentation
+* Query screenshots
+
+---
+
+# Summary
+
+This project demonstrates the design and implementation of a relational database for sports tournament management integrated with clothing store employee management.
+
+The system supports:
+
+* Tournament organization
+* Team management
+* Match tracking
+* Event management
+* Employee relationships
+* Statistical analysis using SQL
