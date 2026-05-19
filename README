@@ -1,467 +1,275 @@
-# Sports Tournament Database – Phase 1
+# Sports Tournament & Clothing Store Database System
 
 ## Overview
-This project is a sports tournament management system implemented using a relational database.
 
-The purpose of Phase 1 is to design the database structure, including entities, attributes, and relationships, using ERD and relational schema (DSD).
+This project is a relational database system designed for managing sports tournaments, teams, matches, and clothing store employees.
 
----
+The system combines sports tournament management with a clothing store management concept, where players, coaches, and referees are also employees of a clothing store.
 
-## System Description
-The system manages a sports tournament that includes:
-- National teams
-- Players
-- Matches
-- Stadiums
-- Match events
-- Referees
-- Coaches
+The project was designed using:
 
-The database allows tracking of players, teams, matches, and events that occur during matches.
+* ERD (Entity Relationship Diagram)
+* Relational Schema (DSD)
+* SQL queries
+* PostgreSQL / MySQL compatible schema
 
 ---
 
-## ERD (Entity Relationship Diagram)
+# System Description
 
-The ERD describes the main entities and their relationships.
+The database manages:
 
-### Main Entities:
-- Player
-- NationalTeam
-- Match
-- Stadium
-- MatchEvent
-- Referee
-- Coach
-- PlayerStatistics
+* National teams
+* Players
+* Coaches
+* Referees
+* Matches
+* Stadiums
+* Match events
+* Player statistics
+* Tournaments
+* Clothing stores
 
-### Key Relationships:
-- A team has many players (1:N)
-- A team has one coach (1:1)
-- A match includes many events (1:N)
-- A player participates in events (1:N)
-- A match is officiated by a referee (1:N)
-- Matches are played in stadiums
+In the updated version of the project:
 
----
-
-## DSD (Database Schema Design)
-
-### Player
-- player_id (PK)
-- first_name
-- last_name
-- birth_date
-- jersey_number
-- position
-- height
-- nationality
-- team_id (FK)
-- extra_info_json
-
-### NationalTeam
-- team_id (PK)
-- team_name
-- country
-- team_rank
-- sport_type
-- founded_date
-- team_colors
-- team_details_json
-
-### Match
-- match_id (PK)
-- match_date
-- home_team
-- away_team
-- home_score
-- away_score
-- attendance
-- status
-- stadium_id (FK)
-
-### Stadium
-- stadium_id (PK)
-- stadium_name
-- city
-- country
-- capacity
-- build_date
-- stadium_type
-
-### MatchEvent
-- event_id (PK)
-- match_id (FK)
-- event_type
-- event_minute
-- event_description
-- event_data_json
-- severity_level
-
-### Referee
-- referee_id (PK)
-- first_name
-- last_name
-- birth_date
-- nationality
-- certification_level
-- years_of_experience
-
-### Coach
-- coach_id (PK)
-- first_name
-- last_name
-- birth_date
-- nationality
-- contract_start_date
-- years_of_experience
-
-### PlayerStatistics
-- stat_id (PK)
-- player_id (FK)
-- match_id (FK)
-- stat_date
-- points_or_goals
-- assists
-- fouls
-- yellow_cards
-- red_cards
-- minutes_played
+* Teams participate in matches
+* Clothing stores organize tournaments
+* Players, coaches, and referees work for clothing stores
 
 ---
 
-## Design Decisions
+# ERD (Entity Relationship Diagram)
 
-- Primary keys are numeric for performance and simplicity.
-- Foreign keys are used to maintain relationships between tables.
-- JSON fields are used for flexible and dynamic data (extra_info_json, event_data_json).
-- Some derived values (like number_of_players) may be calculated dynamically in later phases.
+## Main Entities
 
----
-
-## Assumptions
-
-- Each player belongs to exactly one team.
-- Each team has one coach.
-- Each match has one referee.
-- Each match takes place in one stadium.
-- Events are always linked to a match.
+* NationalTeam
+* Player
+* Coach
+* Referee
+* Match
+* MatchEvent
+* Stadium
+* Tournament
+* ClothingStore
+* PlayerStatistics
 
 ---
 
-## Files Included
+# Main Relationships
 
-- ERD diagram (image)
-- DSD schema
-- Documentation file (this README)
+## Team Relationships
+
+* A national team has many players (1:N)
+* A national team has one coach (1:1)
+* National teams participate in matches (N:N)
+
+## Match Relationships
+
+* A match includes many match events (1:N)
+* A match contains many player statistics (1:N)
+* A match is officiated by one referee (N:1)
+* A match is played in one stadium (N:1)
+* A tournament includes many matches (1:N)
+
+## Clothing Store Relationships
+
+* A clothing store organizes tournaments (1:N)
+* A clothing store employs players (1:N)
+* A clothing store employs coaches (1:N)
+* A clothing store employs referees (1:N)
 
 ---
 
+# DSD (Database Schema Design)
+
+## NationalTeam
+
+* team_id (PK)
+* team_name
+* country
+* team_rank
+* team_colors
+* founded_date
+* sport_type
+* team_details_json
+
+---
+
+## Player
+
+* player_id (PK)
+* first_name
+* last_name
+* birth_date
+* nationality
+* position
+* height
+* jersey_number
+* extra_info_json
+* team_id (FK)
+* store_id (FK)
+
+---
+
+## Coach
+
+* coach_id (PK)
+* first_name
+* last_name
+* birth_date
+* nationality
+* years_of_experience
+* contract_start_date
+* team_id (FK)
+* store_id (FK)
+
+---
+
+## Referee
+
+* referee_id (PK)
+* first_name
+* last_name
+* birth_date
+* nationality
+* certification_level
+* years_of_experience
+* store_id (FK)
+
+---
+
+## Stadium
+
+* stadium_id (PK)
+* stadium_name
+* city
+* country
+* capacity
+* build_date
+* stadium_type
+
+---
+
+## Match
+
+* match_id (PK)
+* match_date
+* stage
+* status
+* home_score
+* away_score
+* attendance
+* weather_json
+* stadium_id (FK)
+* referee_id (FK)
+
+---
+
+## MatchEvent
+
+* event_id (PK)
+* event_type
+* event_minute
+* event_description
+* severity_level
+* event_data_json
+* match_id (FK)
+
+---
+
+## PlayerStatistics
+
+* stat_id (PK)
+* stat_date
+* minutes_played
+* points_or_goals
+* assists
+* fouls
+* yellow_cards
+* red_cards
+* player_id (FK)
+* match_id (FK)
 
-README – Phase 2: SQL Queries
-Table of Contents
-Introduction
-Query 1 – Subquery
-Query 2 – JOIN
-Comparison Between Approaches
-Query 3 – Attendance Statistics
-Query 4 – Event Types Count
-Query 5 – Match Events List
-Query 6 – Team with Maximum Players
-Query 7 – Matches per Stadium
-Query 8 – Matches with Team Names
-Summary
-Introduction
+---
 
-This phase follows the course requirements and demonstrates the use of SQL concepts learned in class, including JOIN, GROUP BY, subqueries, and aggregate functions.
+## Tournament
 
-The goal is to analyze a sports tournament database and extract meaningful insights using SQL queries.
+* tournament_id (PK)
+* tournament_name
+* season
+* start_date
+* end_date
+* location
+* store_id (FK)
 
-Each query includes:
+---
 
-Purpose
-SQL code
-Explanation
-Real-world usage
-Output (with screenshots)
-Query 1 – Count Players per Team (Subquery)
-Purpose
+## ClothingStore
 
-Retrieve the number of players for each national team using a subquery.
+* store_id (PK)
+* store_name
+* brand_name
+* website
+* city
+* phone
 
-SQL
+---
 
-SELECT
-n.team_name,
-(
-SELECT COUNT(*)
-FROM player p
-WHERE p.team_id = n.team_id
-) AS number_of_players
-FROM national_team n;
+# Design Decisions
 
-Explanation
+* Numeric primary keys are used for simplicity and performance.
+* Foreign keys maintain relationships and data integrity.
+* JSON fields are used for flexible and dynamic information.
+* The system supports both tournament management and employee management.
+* Many-to-many relationships are used where teams can participate in multiple matches.
 
-For each team, a subquery counts how many players belong to it.
+---
 
-Real-World Usage
+# Assumptions
 
-This query helps organizers understand team sizes for planning tournaments and logistics.
+* Each player belongs to one national team.
+* Each team has one coach.
+* Each match has one referee.
+* Each match takes place in one stadium.
+* Each tournament is organized by one clothing store.
+* Players, coaches, and referees work for clothing stores.
 
-Output
+---
 
-Example:
+# SQL Features Used
 
-Israel – 158 players
-USA – 180 players
-Spain – 162 players
+The project demonstrates:
 
+* JOIN operations
+* Subqueries
+* GROUP BY
+* HAVING
+* Aggregate functions
+* Foreign Keys
+* Primary Keys
+* Relational modeling
 
+---
 
-Query 2 – Count Players per Team (JOIN)
-Purpose
+# Files Included
 
-Achieve the same result as Query 1 using JOIN.
+* ERD diagram
+* Relational schema (DSD)
+* SQL scripts
+* README documentation
+* Query screenshots
 
-SQL
+---
 
-SELECT
-n.team_name,
-COUNT(p.player_id) AS number_of_players
-FROM national_team n
-LEFT JOIN player p
-ON n.team_id = p.team_id
-GROUP BY n.team_name;
+# Summary
 
-Explanation
+This project demonstrates the design and implementation of a relational database for sports tournament management integrated with clothing store employee management.
 
-Uses LEFT JOIN to include all teams and COUNT to calculate the number of players.
+The system supports:
 
-Real-World Usage
-
-Efficiently retrieves team sizes for reporting and analytics.
-
-
-
-Comparison Between Approaches
-
-The subquery solution (Query 1) is simpler to understand but less efficient, since the subquery executes once for each row.
-
-The JOIN solution (Query 2) is more efficient because it processes all data in a single pass using grouping.
-
-Conclusion
-
-JOIN is preferred for large datasets due to better performance.
-
-Query 3 – Attendance Statistics by Match Status
-Purpose
-
-Calculate statistics about attendance based on match status.
-
-SQL
-
-SELECT
-status,
-AVG(attendance) AS avg_attendance,
-MIN(attendance) AS min_attendance,
-MAX(attendance) AS max_attendance,
-COUNT(*) AS total_matches
-FROM match
-GROUP BY status
-ORDER BY avg_attendance DESC;
-
-Explanation
-
-Calculates average, minimum, maximum attendance and total number of matches.
-
-Real-World Usage
-
-Helps analyze audience engagement and improve future event planning.
-
-Output
-
-Example:
-
-avg_attendance ≈ 25177
-min_attendance = 1163
-max_attendance = 48971
-total_matches = 100
-
-
-Query 4 – Count Events by Type
-Purpose
-
-Count how many events exist for each event type.
-
-SQL
-
-SELECT
-event_type,
-COUNT(*) AS total_events
-FROM match_event
-GROUP BY event_type
-ORDER BY total_events DESC, event_type;
-
-Explanation
-
-Groups events by type and counts them.
-
-Real-World Usage
-
-Useful for analyzing match intensity and player behavior.
-
-
-
-Query 5 – List All Match Events
-Purpose
-
-Display all match events ordered by match and time.
-
-SQL
-
-SELECT
-event_id,
-match_id,
-event_type,
-event_minute,
-event_description
-FROM match_event
-ORDER BY match_id, event_minute;
-
-Explanation
-
-Displays events chronologically by match and minute.
-
-Real-World Usage
-
-Allows tracking full match timelines for analysis and review.
-
-
-
-Query 6 – Team with Maximum Players
-Purpose
-
-Find the team with the highest number of players.
-
-SQL
-
-SELECT
-n.team_id,
-n.team_name,
-COUNT(p.player_id) AS number_of_players
-FROM national_team n
-LEFT JOIN player p
-ON n.team_id = p.team_id
-GROUP BY n.team_id, n.team_name
-HAVING COUNT(p.player_id) = (
-SELECT MAX(player_count)
-FROM (
-SELECT COUNT(p2.player_id) AS player_count
-FROM national_team n2
-LEFT JOIN player p2
-ON n2.team_id = p2.team_id
-GROUP BY n2.team_id
-) AS counts
-);
-
-Explanation
-
-Uses a subquery to find the maximum number of players and filters only the team that matches it.
-
-Real-World Usage
-
-Helps identify dominant or largest teams for strategic decisions.
-
-Output
-
-Example:
-
-USA – 180 players
-
-
-
-Query 7 – Matches per Stadium
-Purpose
-
-Count how many matches were played in each stadium.
-
-SQL
-
-SELECT
-s.stadium_id,
-s.stadium_name,
-COUNT(m.match_id) AS number_of_matches
-FROM stadium s
-LEFT JOIN match m
-ON s.stadium_id = m.stadium_id
-GROUP BY s.stadium_id, s.stadium_name
-ORDER BY number_of_matches DESC, s.stadium_name;
-
-Explanation
-
-Counts matches per stadium using LEFT JOIN.
-
-Real-World Usage
-
-Helps evaluate stadium usage and plan future scheduling.
-
-Output
-
-Example:
-
-National Stadium – 39
-City Arena – 33
-Olympic Field – 28
-
-
-
-Query 8 – Matches with Team Names
-Purpose
-
-Display matches with readable team names instead of IDs.
-
-SQL
-
-SELECT
-m.match_id,
-m.match_date,
-home.team_name AS home_team,
-away.team_name AS away_team,
-m.home_score,
-m.away_score,
-m.status
-FROM match m
-JOIN national_team home
-ON m.home_team_id = home.team_id
-JOIN national_team away
-ON m.away_team_id = away.team_id
-ORDER BY m.match_date;
-
-Explanation
-
-Uses two JOINs to retrieve both home and away team names.
-
-Real-World Usage
-
-Improves readability for reports and user interfaces.
-
-Output
-
-Example:
-
-Israel vs USA (4-4)
-Spain vs USA (3-0)
-
-
-
-Summary
-
-In this phase, we demonstrated:
-
-JOIN operations
-Subqueries
-Aggregate functions (COUNT, AVG, MIN, MAX)
-GROUP BY and HAVING
-Sorting results
-
-From a performance perspective, queries using JOIN are generally more efficient than correlated subqueries, especially on large datasets.
+* Tournament organization
+* Team management
+* Match tracking
+* Event management
+* Employee relationships
+* Statistical analysis using SQL
