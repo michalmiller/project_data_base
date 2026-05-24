@@ -418,15 +418,160 @@ The generated data was inserted into PostgreSQL and verified using SQL queries.
 
 ---
 
-## Data Population
+# Data Population
 
-![Population](images/population.png)
+Data was inserted into the database using three different methods according to project requirements.
+
+## Method 1 – Python Data Generation
+
+Python scripts were used to generate large volumes of realistic data.
+
+Tables populated:
+
+- PLAYER
+- MATCH
+- MATCHEVENT
+- MATCH_TEAM
+- CLOTHINGSTORE
+- NATIONALTEAM
+- REFEREE
+- TOURNAMENT
+
+Random generation included:
+- Random dates
+- Random values
+- Random NULL values in selected fields
+
+Verification results:
+
+- PLAYER → 600 records
+- MATCH → 500 records
+- MATCHEVENT → 800 records
+- CLOTHINGSTORE → 50 records
+- NATIONALTEAM → 60 records
+- REFEREE → 120 records
+
+---
+
+## Method 2 – External Website (Mockaroo)
+
+Mockaroo was used to generate CSV data.
+
+Imported table:
+
+- COACH
+
+Import was performed using pgAdmin Import/Export Data.
+
+Verification result:
+
+- COACH → 600 records
+
+---
+
+## Method 3 – CSV Import
+
+CSV files generated externally were imported into PostgreSQL.
+
+Import process:
+- CSV generation
+- Validation
+- Import into PostgreSQL
+- Data verification
+
+---
+
+# Screenshots
+
+## Python Data Generation
+
+### Python Execution
+
+![Python Insert](images/python_insert_success.png)
+
+---
+
+### Player Data Example
+
+![Player Table](images/player_preview.png)
+
+---
+
+### Population Verification
+
+PLAYER
+
+![Player Count](images/player_count.png)
+
+MATCH
+
+![Match Count](images/match_count.png)
+
+MATCHEVENT
+
+![MatchEvent Count](images/matchevent_count.png)
+
+CLOTHINGSTORE
+
+![Store Count](images/store_count.png)
+
+NATIONALTEAM
+
+![Team Count](images/team_count.png)
+
+REFEREE
+
+![Referee Count](images/referee_count.png)
+
+---
+
+## Mockaroo + CSV Import
+
+### Import Configuration
+
+![Import Config](images/import_config.png)
+
+---
+
+### Import Success
+
+![Import Success](images/import_success.png)
+
+---
+
+### Coach Verification
+
+![Coach Count](images/coach_count.png)
+
+---
+
+### Coach Preview
+
+![Coach Data](images/coach_preview.png)
 
 ---
 
 ## Backup
 
-![Backup](images/backup.png)
+### Backup Execution
+
+![Backup Success](images/backup_success.png)
+
+---
+
+# Backup Documentation
+
+A full PostgreSQL backup was created using pgAdmin.
+
+The backup contains:
+
+- Database schema
+- Tables
+- Relationships
+- Constraints
+- Complete data population
+
+The backup allows full restoration of the project.
 
 ---
 
@@ -479,6 +624,19 @@ The backup supports complete restoration.
 - Create backups
 
 ---
+# Backup Documentation
+
+A full PostgreSQL backup was created using pgAdmin.
+
+The backup includes:
+
+- Database schema
+- Tables
+- Relationships
+- Constraints
+- Data records
+
+The backup supports full restoration.
 
 # Summary
 
