@@ -361,13 +361,13 @@ The database contains sample data for all entities and relationships.
 
 # Screenshots
 
-## ERD Diagram
+## DSD Diagram
 
 ![ERD](images/erd.png)
 
 ---
 
-## DSD Diagram
+## ERD Diagram
 
 ![DSD](images/dsd.png)
 
