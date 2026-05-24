@@ -40,13 +40,13 @@ The system allows:
 
 ---
 
-# DSD Diagram
+# ERD Diagram
 
 ![DSD](images/dsd.png)
 
 ---
 
-# ERD Diagram
+# DSD Diagram
 
 ![ERD](images/erd.png)
 
