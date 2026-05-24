@@ -2,19 +2,15 @@
 
 ## Overview
 
-This project is a relational database system designed for managing sports tournaments, teams, players, referees, coaches, stadiums, and clothing store employees.
+This project is a relational database system designed for managing sports tournaments, national teams, players, referees, coaches, stadiums, matches, and clothing store employees.
 
-The system combines sports tournament management with clothing store management, where:
-- Players work for clothing stores
-- Coaches work for clothing stores
-- Referees work for clothing stores
-- Clothing stores organize tournaments
+The system integrates sports tournament management with clothing store management.
 
 The project was developed using:
+
 - ERD Plus
 - PostgreSQL
 - pgAdmin
-- Python
 - SQL
 - GitHub
 
@@ -31,23 +27,16 @@ The database manages:
 - Matches
 - Stadiums
 - Match events
-- Player statistics
 - Tournaments
 - Clothing stores
 
 The system allows:
+
 - Tournament management
 - Match tracking
-- Player statistics management
 - Employee management
 - Match event tracking
 - Data analysis using SQL queries
-
----
-
-# ERD Diagram
-
-![ERD](images/erd.png)
 
 ---
 
@@ -57,28 +46,45 @@ The system allows:
 
 ---
 
+# ERD Diagram
+
+![ERD](images/erd.png)
+
+---
+
 # Main Entities
 
 ## NationalTeam
 Stores information about national sports teams.
 
+## MatchTeam
+Associative entity connecting matches and national teams.
+
+Each match includes exactly:
+- One HOME team
+- One AWAY team
+
 ## Player
-Stores player information including team membership and clothing store employment.
+Stores player information including team membership and player score.
 
 ## Coach
-Stores coach information and employment details.
+Stores coach information.
+
+## HasCoach
+Associative entity connecting coaches and teams.
+
+Allows:
+- Multiple coaches per team
+- One coach to coach multiple teams
 
 ## Referee
-Stores referee information and certification details.
+Stores referee information.
 
 ## Match
-Stores match information including scores and attendance.
+Stores match information.
 
 ## MatchEvent
 Stores events that occur during matches.
-
-## PlayerStatistics
-Stores player performance statistics.
 
 ## Stadium
 Stores stadium information.
@@ -87,37 +93,60 @@ Stores stadium information.
 Stores tournament information.
 
 ## ClothingStore
-Stores clothing store information and employee relationships.
+Stores clothing store information.
 
 ---
 
 # Main Relationships
 
 ## Team Relationships
-- A national team has many players (1:N)
-- A national team has one coach (1:1)
-- National teams participate in matches (N:N)
+
+- NationalTeam → Player (1:N)
+
+- NationalTeam ↔ Match (N:N)
+Implemented using MATCH_TEAM.
+
+Each match must contain exactly:
+- HOME team
+- AWAY team
+
+- Coach ↔ NationalTeam (N:N)
+Implemented using HAS_COACH.
+
+---
 
 ## Match Relationships
-- A match includes many events (1:N)
-- A match contains many player statistics (1:N)
-- A match is officiated by one referee (N:1)
-- A match is played in one stadium (N:1)
+
+- Match → MatchEvent (1:N)
+
+- Match → Referee (N:1)
+
+- Stadium → Match (1:N)
+
+---
 
 ## Tournament Relationships
-- A tournament includes many matches (1:N)
-- A clothing store organizes tournaments (1:N)
+
+- Tournament → Match (1:N)
+
+- ClothingStore → Tournament (1:N)
+
+---
 
 ## Employment Relationships
-- A clothing store employs players (1:N)
-- A clothing store employs coaches (1:N)
-- A clothing store employs referees (1:N)
+
+- ClothingStore → Player (1:N)
+
+- ClothingStore → Coach (1:N)
+
+- ClothingStore → Referee (1:N)
 
 ---
 
 # Database Schema
 
 ## NationalTeam
+
 - team_id
 - team_name
 - country
@@ -127,7 +156,18 @@ Stores clothing store information and employee relationships.
 - sport_type
 - team_details_json
 
+---
+
+## MatchTeam
+
+- match_id
+- team_id
+- team_role
+
+---
+
 ## Player
+
 - player_id
 - first_name
 - last_name
@@ -136,10 +176,14 @@ Stores clothing store information and employee relationships.
 - position
 - height
 - jersey_number
+- score
 - team_id
 - store_id
 
+---
+
 ## Coach
+
 - coach_id
 - first_name
 - last_name
@@ -147,10 +191,19 @@ Stores clothing store information and employee relationships.
 - nationality
 - years_of_experience
 - contract_start_date
-- team_id
 - store_id
 
+---
+
+## HasCoach
+
+- coach_id
+- team_id
+
+---
+
 ## Referee
+
 - referee_id
 - first_name
 - last_name
@@ -160,7 +213,10 @@ Stores clothing store information and employee relationships.
 - years_of_experience
 - store_id
 
+---
+
 ## Match
+
 - match_id
 - match_date
 - status
@@ -171,46 +227,44 @@ Stores clothing store information and employee relationships.
 - referee_id
 - tournament_id
 
+---
+
 ## MatchEvent
+
 - event_id
 - event_type
 - event_minute
 - event_description
 - severity_level
-- Attribute
 - match_id
 
-## PlayerStatistics
-- stat_id
-- stat_date
-- minutes_played
-- points_or_goals
-- assists
-- fouls
-- yellow_cards
-- red_cards
-- player_id
-- match_id
+---
 
 ## Stadium
+
 - stadium_id
 - stadium_name
 - city
 - country
 - capacity
+- build_date
 - stadium_type
-- match_id
+
+---
 
 ## Tournament
+
 - tournament_id
-- tournament_name
 - season
 - start_date
 - end_date
 - location
 - store_id
 
+---
+
 ## ClothingStore
+
 - store_id
 - store_name
 - brand_name
@@ -223,19 +277,12 @@ Stores clothing store information and employee relationships.
 # Data Types Used
 
 The project uses:
+
 - INTEGER
 - VARCHAR
 - DATE
 
-Fields containing JSON-like data were stored using VARCHAR.
-
-Date fields include:
-- match_date
-- birth_date
-- founded_date
-- contract_start_date
-- start_date
-- end_date
+Fields containing JSON-like information were stored as VARCHAR.
 
 ---
 
@@ -244,109 +291,138 @@ Date fields include:
 ## PLAYER
 
 ```text
-player_id → first_name, last_name, birth_date,
-nationality, position, height, jersey_number,
-team_id, store_id
+player_id →
+first_name,
+last_name,
+birth_date,
+nationality,
+position,
+height,
+jersey_number,
+score,
+team_id,
+store_id
 ```
 
-All non-key attributes depend only on the primary key.
-
-Therefore, the table satisfies 3NF.
+Table satisfies 3NF.
 
 ---
 
 ## MATCH
 
 ```text
-match_id → match_date, status, home_score,
-away_score, attendance, referee_id, tournament_id
+match_id →
+match_date,
+status,
+home_score,
+away_score,
+attendance,
+referee_id,
+tournament_id
 ```
 
-All non-key attributes depend only on the primary key.
-
-Therefore, the table satisfies 3NF.
+Table satisfies 3NF.
 
 ---
 
 ## TOURNAMENT
 
 ```text
-tournament_id → tournament_name, season,
-start_date, end_date, location, store_id
+tournament_id →
+season,
+start_date,
+end_date,
+location,
+store_id
 ```
 
-There are no transitive dependencies.
-
-Therefore, the table satisfies 3NF.
+Table satisfies 3NF.
 
 ---
 
 # Normalization Summary
 
-All tables were normalized to 3NF in order to:
+All tables were normalized to 3NF to:
+
 - Reduce redundancy
-- Prevent update anomalies
+- Prevent anomalies
 - Maintain consistency
-- Improve database integrity
+- Improve integrity
 
 ---
 
 # Data Population
 
-Data was inserted using multiple methods:
+Data was inserted according to project requirements.
 
-## Python Scripts
-Python scripts were used to generate large amounts of random data for:
-- Players
-- Matches
-- Match events
-- Player statistics
-
-## External Websites
-Mockaroo and GenerateData were used to generate realistic data.
-
-## CSV / Excel Files
-CSV files were imported into PostgreSQL tables.
+The database contains sample data for all entities and relationships.
 
 ---
 
-# Data Population Screenshots
+# Screenshots
 
-## Screenshot 1
+## ERD Diagram
 
-![Screenshot1](images/screenshot1.png)
-
----
-
-## Screenshot 2
-
-![Screenshot2](images/screenshot2.png)
+![ERD](images/erd.png)
 
 ---
 
-## Screenshot 3
+## DSD Diagram
 
-![Screenshot3](images/screenshot3.png)
+![DSD](images/dsd.png)
 
 ---
-## Screenshot 4
 
-![Screenshot4](images/screenshot4.png)
+## PostgreSQL Tables
+
+![Tables](images/tables.png)
+
+---
+
+## Sample Queries
+
+![Queries](images/queries.png)
+
+---
+
+## Data Population
+
+![Population](images/population.png)
+
+---
+
+## Backup
+
+![Backup](images/backup.png)
+
+---
+
+# Submitted Files
+
+- README.md
+- ERD Diagram
+- DSD Diagram
+- SQL Schema
+- SQL Insert File
+- PostgreSQL Backup
+- Screenshots
+- GitHub Repository
 
 ---
 
 # Backup Documentation
 
-A full PostgreSQL backup was created using pgAdmin.
+A full PostgreSQL backup was created.
 
 The backup includes:
+
 - Database schema
 - Tables
 - Relationships
 - Constraints
-- Data records
+- Required amount of records
 
-The backup allows complete restoration of the system.
+The backup supports complete restoration.
 
 ---
 
@@ -354,34 +430,33 @@ The backup allows complete restoration of the system.
 
 - PostgreSQL
 - pgAdmin
-- Python
-- ERD Plus
 - SQL
+- ERD Plus
 - GitHub
 
 ---
 
 # Project Goals
 
-The main goals of the project were:
-- Designing a relational database
-- Building a normalized schema
-- Managing relationships between entities
-- Working with PostgreSQL
-- Practicing SQL
-- Creating backups and restoring databases
+- Design a relational database
+- Build normalized schemas
+- Manage relationships
+- Work with PostgreSQL
+- Practice SQL
+- Create backups
 
 ---
 
 # Summary
 
-This project demonstrates the design and implementation of a relational database system for sports tournament management integrated with clothing store employee management.
+This project demonstrates the design and implementation of a relational database system for sports tournament management integrated with clothing store management.
 
 The project includes:
-- ERD design
-- Relational schema design
+
+- ERD
+- DSD
 - Database implementation
 - Data population
-- Backup creation
+- Backup
 - Documentation
-- Normalization analysis
+- Normalization
