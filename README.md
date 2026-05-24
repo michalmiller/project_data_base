@@ -353,11 +353,44 @@ All tables were normalized to 3NF to:
 
 # Data Population
 
-Data was inserted according to project requirements.
+Data was inserted into the database using three different methods, according to the project requirements.
 
-The database contains sample data for all entities and relationships.
+## Method 1: Manual SQL INSERT Commands
+
+Some records were inserted manually using SQL `INSERT INTO` commands.
+
+This method was used for small and basic tables, such as:
+
+- ClothingStore
+- Tournament
+- Stadium
 
 ---
+
+## Method 2: CSV Import
+
+Some records were inserted by importing CSV files into PostgreSQL.
+
+This method was used for larger tables, such as:
+
+- Player
+- Coach
+- Referee
+
+---
+
+## Method 3: Python Data Generation Script
+
+Python scripts were used to generate and insert larger amounts of sample data.
+
+This method was used for tables such as:
+
+- Match
+- MatchTeam
+- MatchEvent
+- HasCoach
+
+The generated data was inserted into PostgreSQL and verified using SQL queries.
 
 # Screenshots
 
