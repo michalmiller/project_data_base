@@ -7,16 +7,6 @@ from faker import Faker
 
 fake = Faker()
 
-conn = psycopg2.connect(
-    host="localhost",
-    database="sports_tournament",
-    user="postgres",
-    password="123456",
-    port="5432"
-)
-
-cur = conn.cursor()
-
 
 def random_date(start_year, end_year):
     start = date(start_year, 1, 1)
@@ -28,8 +18,18 @@ def maybe_null(value, chance=0.15):
     return None if random.random() < chance else value
 
 
+conn = psycopg2.connect(
+    host="localhost",
+    database="sports_tournament",
+    user="postgres",
+    password="123456",
+    port="5432"
+)
+
+cur = conn.cursor()
+
 # 1. ClothingStore
-for i in range(1, 21):
+for i in range(1, 51):
     cur.execute("""
         INSERT INTO clothingstore
         (store_id, store_name, brand_name, website, city, phone)
@@ -41,12 +41,11 @@ for i in range(1, 21):
         fake.company_suffix(),
         fake.url(),
         fake.city(),
-        fake.phone_number()
+        random.randint(100000000, 999999999)
     ))
 
-
 # 2. NationalTeam
-for i in range(1, 31):
+for i in range(1, 61):
     details = {
         "level": random.choice(["professional", "semi-professional"]),
         "active": True,
@@ -70,52 +69,8 @@ for i in range(1, 31):
         json.dumps(details)
     ))
 
-
-# 3. Player
-for i in range(1, 601):
-    cur.execute("""
-        INSERT INTO player
-        (player_id, first_name, last_name, birth_date, nationality,
-         position, height, jersey_number, team_id, store_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (player_id) DO NOTHING;
-    """, (
-        i,
-        fake.first_name(),
-        fake.last_name(),
-        random_date(1980, 2008),
-        maybe_null(fake.country()),
-        random.choice(["Forward", "Midfielder", "Defender", "Goalkeeper"]),
-        random.randint(160, 210),
-        random.randint(1, 99),
-        random.randint(1, 30),
-        random.randint(1, 20)
-    ))
-
-
-# 4. Coach
-for i in range(1, 31):
-    cur.execute("""
-    INSERT INTO coach
-    ("coach_id_", "first_name", "last_name", "birth_date", "nationality",
-     "years_of_experience", "contract_start_date", "team_id", "store_id")
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-    ON CONFLICT ("coach_id_") DO NOTHING;
-""", (
-    i,
-    fake.first_name(),
-    fake.last_name(),
-    random_date(1960, 1990),
-    fake.country(),
-    random.randint(1, 35),
-    random_date(2018, 2025),
-    i,
-    random.randint(1, 20)
-))
-
-
-# 5. Referee
-for i in range(1, 101):
+# 3. Referee
+for i in range(1, 121):
     cur.execute("""
         INSERT INTO referee
         (referee_id, first_name, last_name, birth_date, nationality,
@@ -130,63 +85,177 @@ for i in range(1, 101):
         fake.country(),
         random.choice(["Local", "National", "International"]),
         random.randint(1, 25),
-        random.randint(1, 20)
+        random.randint(1, 50)
     ))
 
-
-# 6. Tournament
-for i in range(1, 21):
+# 4. Tournament
+for i in range(1, 31):
     start = random_date(2020, 2025)
     end = start + timedelta(days=random.randint(7, 60))
 
     cur.execute("""
         INSERT INTO tournament
-        (tournament_id, tournament_name, season, start_date, end_date, location, store_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        (tournament_id, season, start_date, end_date, location, store_id)
+        VALUES (%s, %s, %s, %s, %s, %s)
         ON CONFLICT (tournament_id) DO NOTHING;
     """, (
         i,
-        f"{fake.city()} Cup",
         random.choice(["Winter", "Spring", "Summer", "Autumn"]),
         start,
         end,
         fake.city(),
-        random.randint(1, 20)
+        random.randint(1, 50)
     ))
 
+# 5. Coach
+for i in range(1, 101):
+    cur.execute("""
+        INSERT INTO coach
+        (coach_id_, first_name, last_name, birth_date, nationality,
+         years_of_experience, contract_start_date, store_id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (coach_id_) DO NOTHING;
+    """, (
+        i,
+        fake.first_name(),
+        fake.last_name(),
+        random_date(1960, 1990),
+        fake.country(),
+        random.randint(1, 35),
+        random_date(2018, 2025),
+        random.randint(1, 50)
+    ))
 
-# 7. Match
-for i in range(1, 201):
+# 6. Has_Coach
+used_coach_team = set()
+
+while len(used_coach_team) < 180:
+    coach_id = random.randint(1, 100)
+    team_id = random.randint(1, 60)
+
+    if (coach_id, team_id) in used_coach_team:
+        continue
+
+    used_coach_team.add((coach_id, team_id))
+
+    cur.execute("""
+        INSERT INTO has_coach
+        (coach_id_, team_id)
+        VALUES (%s, %s)
+        ON CONFLICT (coach_id_, team_id) DO NOTHING;
+    """, (
+        coach_id,
+        team_id
+    ))
+
+# 7. Player - 600 records
+for i in range(1, 601):
+    cur.execute("""
+        INSERT INTO player
+        (player_id, first_name, last_name, birth_date, nationality,
+         position, height, jersey_number, score, team_id, store_id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (player_id) DO NOTHING;
+    """, (
+        i,
+        fake.first_name(),
+        fake.last_name(),
+        random_date(1980, 2008),
+        maybe_null(fake.country()),
+        random.choice(["Forward", "Midfielder", "Defender", "Goalkeeper"]),
+        random.randint(160, 210),
+        random.randint(1, 99),
+        random.randint(0, 100),
+        random.randint(1, 60),
+        random.randint(1, 50)
+    ))
+
+# 8. Match - 500 records
+
+for i in range(1, 501):
+
     weather = {
-        "weather": random.choice(["sunny", "rainy", "cloudy", "windy"]),
+        "weather": random.choice([
+            "sunny",
+            "rainy",
+            "cloudy",
+            "windy"
+        ]),
         "temperature": random.randint(10, 35)
     }
 
     cur.execute("""
         INSERT INTO match
-        (match_id, match_date, status, home_score, away_score,
-         attendance, weather_json, referee_id, tournament_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (match_id) DO NOTHING;
+        (
+            match_id,
+            match_date,
+            status,
+            home_score,
+            away_score,
+            attendance,
+            weather_json,
+            referee_id,
+            tournament_id
+        )
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        ON CONFLICT (match_id)
+        DO NOTHING;
     """, (
         i,
         random_date(2020, 2025),
-        random.choice(["Scheduled", "Finished", "Cancelled"]),
+        random.choice([
+            "Scheduled",
+            "Finished",
+            "Cancelled"
+        ]),
         random.randint(0, 5),
         random.randint(0, 5),
-        random.randint(1000, 60000),  # בלי NULL
-        json.dumps(weather),
-        random.randint(1, 100),
-        random.randint(1, 20)
+        random.randint(1000, 60000),
+
+        json.dumps(weather),   
+
+        random.randint(1, 120),
+        random.randint(1, 30)
     ))
 
-# 8. Stadium
-for i in range(1, 51):
+# 9. Match_Team - exactly two teams per match
+
+for match_id in range(1, 501):
+    home_team = random.randint(1, 60)
+    away_team = random.randint(1, 60)
+
+    while away_team == home_team:
+        away_team = random.randint(1, 60)
+
+    cur.execute("""
+        INSERT INTO match_team
+        (match_id, team_id, team_role)
+        VALUES (%s, %s, %s)
+        ON CONFLICT DO NOTHING;
+    """, (
+        match_id,
+        home_team,
+        "HOME"
+    ))
+
+    cur.execute("""
+        INSERT INTO match_team
+        (match_id, team_id, team_role)
+        VALUES (%s, %s, %s)
+        ON CONFLICT DO NOTHING;
+    """, (
+        match_id,
+        away_team,
+        "AWAY"
+    ))
+
+# 10. Stadium
+for i in range(1, 101):
     cur.execute("""
         INSERT INTO stadium
         (stadium_id, stadium_name, city, country, capacity,
-         stadium_type, match_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+         build_date, stadium_type, match_id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (stadium_id) DO NOTHING;
     """, (
         i,
@@ -194,75 +263,46 @@ for i in range(1, 51):
         fake.city(),
         fake.country(),
         random.randint(5000, 90000),
+        random_date(1950, 2020),
         random.choice(["Open", "Closed", "Olympic"]),
-        random.randint(1, 200)
+        random.randint(1, 500)
     ))
 
-# 9. MatchEvent
-event_types = ["Goal", "Yellow Card", "Red Card", "Substitution", "Foul"]
+# 11. MatchEvent - 800 records
 
-for i in range(1, 701):
+event_types = [
+    "Goal",
+    "Yellow Card",
+    "Red Card",
+    "Substitution",
+    "Foul"
+]
+
+for i in range(1, 801):
+
     cur.execute("""
         INSERT INTO matchevent
-        (event_id, event_type, event_minute, event_description,
-         severity_level, Attribute, match_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (event_id) DO NOTHING;
+        (
+            event_id,
+            event_type,
+            event_minute,
+            event_description,
+            severity_level,
+            match_id
+        )
+        VALUES (%s,%s,%s,%s,%s,%s)
+        ON CONFLICT (event_id)
+        DO NOTHING;
     """, (
         i,
         random.choice(event_types),
         random.randint(1, 90),
-        fake.sentence(), 
-        random.choice(["Low", "Medium", "High"]),
         random.randint(1, 10),
-        random.randint(1, 200)
+        random.randint(1, 5),
+        random.randint(1, 500)
     ))
-
-# 10. PlayerStatistics
-for i in range(1, 701):
-    cur.execute("""
-        INSERT INTO playerstatistics
-        (stat_id_, stat_date, minutes_played, points_or_goals,
-         assists, fouls, yellow_cards, red_cards, player_id, match_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (stat_id_) DO NOTHING;
-    """, (
-        i,
-        random_date(2020, 2025),
-        random.randint(0, 90),
-        random.randint(0, 5),
-        random.randint(0, 4),
-        random.randint(0, 8),
-        random.randint(0, 2),
-        random.randint(0, 1),
-        random.randint(1, 600),
-        random.randint(1, 200)
-    ))
-
-# 11. Plays_In_Match
-used_pairs = set()
-
-while len(used_pairs) < 400:
-    match_id = random.randint(1, 200)
-    team_id = random.randint(1, 30)
-
-    if (match_id, team_id) in used_pairs:
-        continue
-
-    used_pairs.add((match_id, team_id))
-
-    cur.execute("""
-        INSERT INTO plays_in_match
-        (match_id, team_id)
-        VALUES (%s, %s)
-        ON CONFLICT DO NOTHING;
-    """, (
-        match_id,
-        team_id
-    ))
-
-
 conn.commit()
+
 cur.close()
 conn.close()
 
