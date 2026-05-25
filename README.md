@@ -42,12 +42,10 @@ The system allows:
 
 # ERD Diagram
 
-![DSD](images/dsd.png)
-
+![ERD](images/erd.png)
 ---
 
 # DSD Diagram
-
 ![ERD](images/erd.png)
 
 ---
@@ -58,11 +56,25 @@ The system allows:
 Stores information about national sports teams.
 
 ## MatchTeam
+
 Associative entity connecting matches and national teams.
 
-Each match includes exactly:
-- One HOME team
-- One AWAY team
+The entity determines which team plays as the HOME team and which plays as the AWAY team.
+
+Attributes:
+
+- match_id
+- team_id
+- team_role
+
+Business Rules:
+
+- Each MATCH contains exactly two teams.
+- Exactly one team must have role HOME.
+- Exactly one team must have role AWAY.
+- team_role accepts only:
+  - HOME
+  - AWAY
 
 ## Player
 Stores player information including team membership and player score.
@@ -106,14 +118,19 @@ Stores clothing store information.
 - NationalTeam ↔ Match (N:N)
 Implemented using MATCH_TEAM.
 
-Each match must contain exactly:
-- HOME team
-- AWAY team
+Business Constraints:
+
+- Each match must contain exactly two teams.
+- One team is defined as HOME.
+- One team is defined as AWAY.
+
+Implementation constraints:
+
+- CHECK(team_role IN ('HOME','AWAY'))
+- UNIQUE(match_id, team_role)
 
 - Coach ↔ NationalTeam (N:N)
 Implemented using HAS_COACH.
-
----
 
 ## Match Relationships
 
@@ -160,10 +177,14 @@ Implemented using HAS_COACH.
 
 ## MatchTeam
 
-- match_id
-- team_id
-- team_role
+- match_id (PK, FK)
+- team_id (PK, FK)
+- team_role (VARCHAR)
 
+Constraints:
+
+- CHECK(team_role IN ('HOME','AWAY'))
+- UNIQUE(match_id, team_role)
 ---
 
 ## Player
@@ -396,13 +417,13 @@ The generated data was inserted into PostgreSQL and verified using SQL queries.
 
 ## DSD Diagram
 
-![ERD](images/erd.png)
 
+![DSD](images/dsd.png)
 ---
 
 ## ERD Diagram
 
-![DSD](images/dsd.png)
+![ERD](images/erd.png)
 
 ---
 
