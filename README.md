@@ -46,7 +46,7 @@ The system allows:
 ---
 
 # DSD Diagram
-![ERD](images/erd.png)
+![DSD](images/dsd.png)
 
 ---
 
