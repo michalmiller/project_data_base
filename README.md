@@ -435,8 +435,120 @@ The generated data was inserted into PostgreSQL and verified using SQL queries.
 
 ## Sample Queries
 
-![Queries](images/queries.png)
+## Query 1 – Team With the Highest Number of Players
 
+### Purpose
+This query finds the national team that has the highest number of players.
+
+### SQL
+```sql
+SELECT 
+    nt.team_id,
+    nt.team_name,
+    COUNT(p.player_id) AS number_of_players
+FROM nationalteam nt
+JOIN player p
+    ON nt.team_id = p.team_id
+GROUP BY nt.team_id, nt.team_name
+HAVING COUNT(p.player_id) = (
+    SELECT MAX(player_count)
+    FROM (
+        SELECT COUNT(player_id) AS player_count
+        FROM player
+        GROUP BY team_id
+    ) AS team_counts
+);
+
+## Query 2 – Average Player Score Per Team
+
+### Purpose
+
+This query calculates the average player score for each national team.
+
+### SQL
+
+```sql
+SELECT
+    nt.team_id,
+    nt.team_name,
+    ROUND(AVG(p.score),2) AS average_score,
+    COUNT(p.player_id) AS number_of_players
+FROM nationalteam nt
+JOIN player p
+    ON nt.team_id = p.team_id
+GROUP BY
+    nt.team_id,
+    nt.team_name
+ORDER BY average_score DESC;
+## Query 3 – Match With Highest Attendance
+
+### Purpose
+
+This query finds the match (or matches) with the highest attendance.
+
+### SQL
+
+```sql
+SELECT
+    match_id,
+    match_date,
+    attendance,
+    home_score,
+    away_score
+FROM match
+WHERE attendance = (
+    SELECT MAX(attendance)
+    FROM match
+);
+```
+
+### Explanation
+
+The query finds the maximum attendance value and returns all matches that reached this value.
+
+### Screenshot
+
+![Query 3 Result](images/query3_highest_attendance.png)
+
+This query demonstrates the use of aggregate functions and subqueries without relying on LIMIT.
+## Query 4 – Referee With the Highest Number of Matches
+
+### Purpose
+
+This query finds the referee or referees who officiated the highest number of matches.
+
+### SQL
+
+```sql
+SELECT
+    r.referee_id,
+    r.first_name,
+    r.last_name,
+    COUNT(m.match_id) AS number_of_matches
+FROM referee r
+JOIN match m
+    ON r.referee_id = m.referee_id
+GROUP BY
+    r.referee_id,
+    r.first_name,
+    r.last_name
+HAVING COUNT(m.match_id) = (
+    SELECT MAX(match_count)
+    FROM (
+        SELECT COUNT(match_id) AS match_count
+        FROM match
+        GROUP BY referee_id
+    ) AS referee_counts
+);
+```
+
+### Explanation
+
+The query counts how many matches each referee officiated and returns the referee with the maximum number of matches.
+
+### Screenshot
+
+![Query 4 Result](images/query4_referee_most_matches.png)
 ---
 
 # Data Population
