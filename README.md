@@ -433,14 +433,22 @@ The generated data was inserted into PostgreSQL and verified using SQL queries.
 
 ---
 
-## Sample Queries
+# Stage 2 – SQL Queries
 
-## Query 1 – Team With the Highest Number of Players
+This section presents SQL queries developed for the Sports Tournament & Clothing Store Database System.
 
-### Purpose
-This query finds the national team that has the highest number of players.
+For each query, the purpose, SQL code, explanation, and execution results are provided.
 
-### SQL
+---
+
+# Query 1 – Team With the Highest Number of Players
+
+## Purpose
+
+This query finds the national team that contains the highest number of players.
+
+## SQL
+
 ```sql
 SELECT 
     nt.team_id,
@@ -458,14 +466,25 @@ HAVING COUNT(p.player_id) = (
         GROUP BY team_id
     ) AS team_counts
 );
+```
 
-## Query 2 – Average Player Score Per Team
+## Explanation
 
-### Purpose
+The query groups players by team, counts the number of players in each team, and returns the team that has the maximum number of players.
 
-This query calculates the average player score for each national team.
+## Screenshot
 
-### SQL
+![Query 1](images/query1_team_with_most_players.png)
+
+---
+
+# Query 2 – Average Player Score Per Team
+
+## Purpose
+
+This query calculates the average player score for every national team.
+
+## SQL
 
 ```sql
 SELECT
@@ -480,13 +499,25 @@ GROUP BY
     nt.team_id,
     nt.team_name
 ORDER BY average_score DESC;
-## Query 3 – Match With Highest Attendance
+```
 
-### Purpose
+## Explanation
 
-This query finds the match (or matches) with the highest attendance.
+The query calculates the average score of players in each team and sorts the teams from the highest average score to the lowest.
 
-### SQL
+## Screenshot
+
+![Query 2](images/query2_average_score.png)
+
+---
+
+# Query 3 – Match With Highest Attendance
+
+## Purpose
+
+This query finds the match or matches with the highest attendance.
+
+## SQL
 
 ```sql
 SELECT
@@ -502,22 +533,27 @@ WHERE attendance = (
 );
 ```
 
-### Explanation
+## Explanation
 
-The query finds the maximum attendance value and returns all matches that reached this value.
+The query uses a subquery to identify the maximum attendance value and returns all matches that reached that value.
 
-### Screenshot
+## Screenshot
 
-![Query 3 Result](images/query3_highest_attendance.png)
+![Query 3](images/query3_highest_attendance.png)
 
-This query demonstrates the use of aggregate functions and subqueries without relying on LIMIT.
-## Query 4 – Referee With the Highest Number of Matches
+## Conclusion
 
-### Purpose
+This query demonstrates the use of aggregate functions and subqueries without using LIMIT.
 
-This query finds the referee or referees who officiated the highest number of matches.
+---
 
-### SQL
+# Query 4 – Referee With the Highest Number of Matches
+
+## Purpose
+
+This query finds the referee who officiated the highest number of matches.
+
+## SQL
 
 ```sql
 SELECT
@@ -542,15 +578,28 @@ HAVING COUNT(m.match_id) = (
 );
 ```
 
-### Explanation
+## Explanation
 
-The query counts how many matches each referee officiated and returns the referee with the maximum number of matches.
+The query counts the number of matches officiated by each referee and returns the referee with the highest number of matches.
 
-### Screenshot
+## Screenshot
 
-![Query 4 Result](images/query4_referee_most_matches.png)
+![Query 4](images/query4_referee_most_matches.png)
+
 ---
 
+# Summary
+
+The queries presented in this stage demonstrate the use of:
+
+- JOIN
+- GROUP BY
+- Aggregate Functions (COUNT, AVG, MAX)
+- Subqueries
+- Sorting (ORDER BY)
+- Data Analysis Queries
+
+These queries provide useful insights into teams, players, matches, and referees within the system.
 # Data Population
 
 Data was inserted into the database using three different methods according to project requirements.
