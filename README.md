@@ -833,3 +833,17 @@ The project includes:
 - Backup
 - Documentation
 - Normalization
+
+---
+
+# Stage 3 – Integration and Views
+
+Stage 3 deliverables are prepared in [Stage3_Report.md](שלב%20ג/Stage3_Report.md) and the companion SQL scripts in the same folder.
+
+Included files:
+
+- `Integrate.sql` - schema integration and table-alteration script
+- `Views.sql` - two project views and example queries on each view
+- `Stage3_Report.md` - report draft for the integration stage
+
+The SQL scripts use the actual table names that appear in the current project files, including `nationalteam`, `match_team`, `matchevent`, `coach`, and `stadium.match_id`.
