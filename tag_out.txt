@@ -1,0 +1,12 @@
+final_stage_1
+stage5-final
+stage_1
+stage_2
+stage_c_submission
+stage_d_submission
+stage_e_submission
+v1.0
+52339eb Stage 5 final: add store revenue + inventory restock tabs, scrollable sidebar, light theme
+eed8c1b Stage 5: GUI application - Python/Tkinter with full CRUD, queries, procedures
+944b2a9 stage_4
+42e88b6 Stage C report updates with screenshots and integration files
