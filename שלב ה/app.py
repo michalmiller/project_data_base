@@ -15,20 +15,25 @@ from crud_screen import CRUDScreen
 from queries_screen import QueriesScreen
 from procedures_screen import ProceduresScreen
 
-# Color scheme
+# Color scheme - light, clean, modern
 COLORS = {
-    "bg": "#1e1e2e",
-    "sidebar": "#181825",
-    "card": "#313244",
-    "accent": "#89b4fa",
-    "accent_hover": "#b4d0fb",
-    "text": "#cdd6f4",
-    "text_dim": "#a6adc8",
-    "success": "#a6e3a1",
-    "danger": "#f38ba8",
-    "warning": "#f9e2af",
-    "input_bg": "#45475a",
-    "border": "#585b70"
+    "bg": "#f0f4f8",
+    "sidebar": "#1e3a5f",
+    "card": "#ffffff",
+    "accent": "#2563eb",
+    "accent_hover": "#1d4ed8",
+    "text": "#1e293b",
+    "text_dim": "#64748b",
+    "success": "#16a34a",
+    "danger": "#dc2626",
+    "warning": "#d97706",
+    "input_bg": "#f8fafc",
+    "border": "#cbd5e1",
+    # sidebar-specific (white text on dark blue background)
+    "sidebar_text": "#e2e8f0",
+    "sidebar_text_dim": "#94a3b8",
+    "sidebar_accent": "#60a5fa",
+    "sidebar_hover": "#2d5a8e",
 }
 
 # Table definitions with display names and columns
@@ -286,44 +291,51 @@ class MainApplication(tk.Tk):
 
         # Title
         tk.Label(self.login_frame, text="Sports & Store",
-                 font=("Segoe UI", 28, "bold"),
-                 bg=COLORS["bg"], fg=COLORS["accent"]).pack(pady=(0, 5))
+                 font=("Segoe UI", 30, "bold"),
+                 bg=COLORS["bg"], fg=COLORS["accent"]).pack(pady=(0, 4))
         tk.Label(self.login_frame, text="Management System",
-                 font=("Segoe UI", 20),
-                 bg=COLORS["bg"], fg=COLORS["text"]).pack(pady=(0, 30))
+                 font=("Segoe UI", 16),
+                 bg=COLORS["bg"], fg=COLORS["text_dim"]).pack(pady=(0, 28))
 
-        # Login card
+        # Login card with border
         card = tk.Frame(self.login_frame, bg=COLORS["card"],
-                        padx=40, pady=30)
+                        padx=45, pady=35,
+                        highlightbackground=COLORS["border"],
+                        highlightthickness=1)
         card.pack()
 
-        tk.Label(card, text="Welcome", font=("Segoe UI", 16, "bold"),
-                 bg=COLORS["card"], fg=COLORS["text"]).pack(pady=(0, 20))
+        tk.Label(card, text="Sign In", font=("Segoe UI", 17, "bold"),
+                 bg=COLORS["card"], fg=COLORS["text"]).pack(pady=(0, 22))
 
-        tk.Label(card, text="Username:", font=("Segoe UI", 11),
+        tk.Label(card, text="Username:", font=("Segoe UI", 10),
                  bg=COLORS["card"], fg=COLORS["text_dim"]).pack(anchor="w")
         self.user_entry = tk.Entry(card, font=("Segoe UI", 12),
                                    bg=COLORS["input_bg"], fg=COLORS["text"],
                                    insertbackground=COLORS["text"],
-                                   relief="flat", width=25)
-        self.user_entry.pack(pady=(2, 10), ipady=5)
+                                   relief="flat", width=25,
+                                   highlightbackground=COLORS["border"],
+                                   highlightthickness=1)
+        self.user_entry.pack(pady=(2, 12), ipady=6)
         self.user_entry.insert(0, "admin")
 
-        tk.Label(card, text="Password:", font=("Segoe UI", 11),
+        tk.Label(card, text="Password:", font=("Segoe UI", 10),
                  bg=COLORS["card"], fg=COLORS["text_dim"]).pack(anchor="w")
         self.pass_entry = tk.Entry(card, font=("Segoe UI", 12), show="*",
                                    bg=COLORS["input_bg"], fg=COLORS["text"],
                                    insertbackground=COLORS["text"],
-                                   relief="flat", width=25)
-        self.pass_entry.pack(pady=(2, 20), ipady=5)
+                                   relief="flat", width=25,
+                                   highlightbackground=COLORS["border"],
+                                   highlightthickness=1)
+        self.pass_entry.pack(pady=(2, 22), ipady=6)
         self.pass_entry.insert(0, "admin")
 
         btn = tk.Button(card, text="Login", font=("Segoe UI", 12, "bold"),
-                        bg=COLORS["accent"], fg="#1e1e2e",
+                        bg=COLORS["accent"], fg="#ffffff",
                         activebackground=COLORS["accent_hover"],
+                        activeforeground="#ffffff",
                         relief="flat", cursor="hand2", width=20,
                         command=self.do_login)
-        btn.pack(ipady=5)
+        btn.pack(ipady=7)
 
         self.pass_entry.bind("<Return>", lambda e: self.do_login())
 
@@ -333,25 +345,52 @@ class MainApplication(tk.Tk):
         self.build_main_ui()
 
     def build_main_ui(self):
-        """Build the main UI with sidebar and content area."""
-        # Sidebar
-        self.sidebar = tk.Frame(self, bg=COLORS["sidebar"], width=220)
-        self.sidebar.pack(side="left", fill="y")
-        self.sidebar.pack_propagate(False)
+        """Build the main UI with scrollable sidebar and content area."""
+        # Sidebar outer container (fixed width)
+        sidebar_outer = tk.Frame(self, bg=COLORS["sidebar"], width=220)
+        sidebar_outer.pack(side="left", fill="y")
+        sidebar_outer.pack_propagate(False)
+
+        # Canvas inside sidebar for scrolling
+        self._sidebar_canvas = tk.Canvas(
+            sidebar_outer, bg=COLORS["sidebar"],
+            highlightthickness=0, width=220)
+        sidebar_scroll = ttk.Scrollbar(
+            sidebar_outer, orient="vertical",
+            command=self._sidebar_canvas.yview)
+        self._sidebar_canvas.configure(
+            yscrollcommand=sidebar_scroll.set)
+
+        sidebar_scroll.pack(side="right", fill="y")
+        self._sidebar_canvas.pack(side="left", fill="both", expand=True)
+
+        # Inner frame that holds all sidebar widgets
+        self.sidebar = tk.Frame(self._sidebar_canvas, bg=COLORS["sidebar"])
+        self._sidebar_window = self._sidebar_canvas.create_window(
+            (0, 0), window=self.sidebar, anchor="nw")
+
+        # Update scroll region when inner frame changes size
+        self.sidebar.bind("<Configure>", self._on_sidebar_configure)
+        self._sidebar_canvas.bind("<Configure>", self._on_canvas_configure)
+
+        # Mouse-wheel scrolling
+        self._sidebar_canvas.bind_all(
+            "<MouseWheel>",
+            lambda e: self._sidebar_canvas.yview_scroll(
+                int(-1 * (e.delta / 120)), "units"))
 
         # Sidebar header
         tk.Label(self.sidebar, text="Navigation",
                  font=("Segoe UI", 13, "bold"),
-                 bg=COLORS["sidebar"], fg=COLORS["accent"]).pack(
+                 bg=COLORS["sidebar"], fg=COLORS["sidebar_accent"]).pack(
             pady=(15, 10), padx=15, anchor="w")
 
-        # Separator
         ttk.Separator(self.sidebar, orient="horizontal").pack(
             fill="x", padx=10, pady=5)
 
         # Sports section
         tk.Label(self.sidebar, text="SPORTS", font=("Segoe UI", 9, "bold"),
-                 bg=COLORS["sidebar"], fg=COLORS["text_dim"]).pack(
+                 bg=COLORS["sidebar"], fg=COLORS["sidebar_text_dim"]).pack(
             padx=15, pady=(10, 2), anchor="w")
 
         sports_tables = ["nationalteam", "player", "coach", "referee",
@@ -364,7 +403,7 @@ class MainApplication(tk.Tk):
 
         # Retail section
         tk.Label(self.sidebar, text="RETAIL", font=("Segoe UI", 9, "bold"),
-                 bg=COLORS["sidebar"], fg=COLORS["text_dim"]).pack(
+                 bg=COLORS["sidebar"], fg=COLORS["sidebar_text_dim"]).pack(
             padx=15, pady=(5, 2), anchor="w")
 
         retail_tables = ["clothingstore", "branch", "customer", "employee",
@@ -376,28 +415,28 @@ class MainApplication(tk.Tk):
         ttk.Separator(self.sidebar, orient="horizontal").pack(
             fill="x", padx=10, pady=5)
 
-        # Special screens
+        # Advanced section
         tk.Label(self.sidebar, text="ADVANCED", font=("Segoe UI", 9, "bold"),
-                 bg=COLORS["sidebar"], fg=COLORS["text_dim"]).pack(
+                 bg=COLORS["sidebar"], fg=COLORS["sidebar_text_dim"]).pack(
             padx=15, pady=(5, 2), anchor="w")
 
         btn_q = tk.Button(self.sidebar, text="Queries (Stage 2)",
                           font=("Segoe UI", 10),
-                          bg=COLORS["sidebar"], fg=COLORS["warning"],
-                          activebackground=COLORS["card"],
-                          activeforeground=COLORS["warning"],
+                          bg=COLORS["sidebar"], fg="#fbbf24",
+                          activebackground=COLORS["sidebar_hover"],
+                          activeforeground="#fbbf24",
                           relief="flat", anchor="w", cursor="hand2",
                           command=self.show_queries)
         btn_q.pack(fill="x", padx=10, pady=1)
 
         btn_p = tk.Button(self.sidebar, text="Procedures (Stage 4)",
                           font=("Segoe UI", 10),
-                          bg=COLORS["sidebar"], fg=COLORS["success"],
-                          activebackground=COLORS["card"],
-                          activeforeground=COLORS["success"],
+                          bg=COLORS["sidebar"], fg="#4ade80",
+                          activebackground=COLORS["sidebar_hover"],
+                          activeforeground="#4ade80",
                           relief="flat", anchor="w", cursor="hand2",
                           command=self.show_procedures)
-        btn_p.pack(fill="x", padx=10, pady=1)
+        btn_p.pack(fill="x", padx=10, pady=(1, 15))
 
         # Content area
         self.content = tk.Frame(self, bg=COLORS["bg"])
@@ -406,14 +445,24 @@ class MainApplication(tk.Tk):
         # Show welcome
         self._show_welcome()
 
+    def _on_sidebar_configure(self, event):
+        """Update canvas scroll region when sidebar content changes."""
+        self._sidebar_canvas.configure(
+            scrollregion=self._sidebar_canvas.bbox("all"))
+
+    def _on_canvas_configure(self, event):
+        """Stretch inner frame to fill canvas width."""
+        self._sidebar_canvas.itemconfig(
+            self._sidebar_window, width=event.width)
+
     def _add_sidebar_btn(self, table_name):
         """Add a sidebar navigation button for a table."""
         display = TABLES[table_name]["display"]
         btn = tk.Button(self.sidebar, text=f"  {display}",
                         font=("Segoe UI", 10),
-                        bg=COLORS["sidebar"], fg=COLORS["text"],
-                        activebackground=COLORS["card"],
-                        activeforeground=COLORS["accent"],
+                        bg=COLORS["sidebar"], fg=COLORS["sidebar_text"],
+                        activebackground=COLORS["sidebar_hover"],
+                        activeforeground="#ffffff",
                         relief="flat", anchor="w", cursor="hand2",
                         command=lambda t=table_name: self.show_table(t))
         btn.pack(fill="x", padx=10, pady=1)
@@ -429,14 +478,41 @@ class MainApplication(tk.Tk):
         frame = tk.Frame(self.content, bg=COLORS["bg"])
         frame.place(relx=0.5, rely=0.4, anchor="center")
 
+        # Icon-like circle placeholder
+        tk.Label(frame, text="⚽  🏪",
+                 font=("Segoe UI", 36),
+                 bg=COLORS["bg"], fg=COLORS["accent"]).pack(pady=(0, 15))
+
         tk.Label(frame, text="Welcome to the Management System",
-                 font=("Segoe UI", 20, "bold"),
-                 bg=COLORS["bg"], fg=COLORS["text"]).pack(pady=(0, 10))
-        tk.Label(frame, text="Select a table from the sidebar to manage data,\n"
-                             "or use the Advanced section for queries and procedures.",
+                 font=("Segoe UI", 22, "bold"),
+                 bg=COLORS["bg"], fg=COLORS["text"]).pack(pady=(0, 8))
+
+        tk.Label(frame,
+                 text="Select a table from the sidebar to manage data,\n"
+                      "or use the Advanced section for queries and procedures.",
                  font=("Segoe UI", 12),
                  bg=COLORS["bg"], fg=COLORS["text_dim"],
                  justify="center").pack()
+
+        # Quick-access cards row
+        cards_frame = tk.Frame(frame, bg=COLORS["bg"])
+        cards_frame.pack(pady=25)
+
+        for label, color, cmd in [
+            ("Queries", COLORS["warning"], self.show_queries),
+            ("Procedures", COLORS["success"], self.show_procedures),
+        ]:
+            card = tk.Frame(cards_frame, bg=COLORS["card"],
+                            padx=20, pady=12,
+                            highlightbackground=COLORS["border"],
+                            highlightthickness=1)
+            card.pack(side="left", padx=10)
+            tk.Label(card, text=label, font=("Segoe UI", 11, "bold"),
+                     bg=COLORS["card"], fg=color).pack()
+            tk.Button(card, text="Open", font=("Segoe UI", 9),
+                      bg=color, fg="#ffffff", relief="flat",
+                      cursor="hand2", command=cmd,
+                      padx=10).pack(pady=(6, 0))
 
     def show_table(self, table_name):
         """Show CRUD screen for a table."""
